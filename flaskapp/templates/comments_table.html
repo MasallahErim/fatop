@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+    </div>
+
+
+
+    <div class="list-table-container">
+        <table class="list-table">
+            <thead>
+                <tr>
+                    <th>number</th>
+                    <th>comment</th>
+                    <th>likes</th>
+                    <th>author</th>
+                </tr>
+            </thead>
+            <tbody>
+           {%for idx, comment in enumerate(comAll['video_comments'], start=1) %}
+                <tr>
+                    <td>{{ idx }}</td>
+                    <td>{{comment['comment_text']}}</td>
+                    <td> {{ comment['like_count']}}</td>
+                    <td> {{comment['author']}}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+</body>    
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+    <script src="{{ url_for('static', filename='js/a.js')}}"></script>
+</head>
+<body>
+
+<div class="navbar">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#contact">Contact</a>
+</div>
+
+<h1>Youtube Linkini Giriniz</h1>
+<form action="/comments_show" method="post">
+    <label for="link">Link:</label>
+    <input type="text" id="link" name="link" required>
+    <br>
+    <button type="submit">Gönder</button>
+</form>
+
+{%if comAll%}
+<form action="/analysis" method="post">
+    <button type="submit">duygu analizi</button>
+</form>
+
+<div class="scrollable-container">
+    <table id="commentTable">
+        <thead>
+        <tr>
+            <th onclick="sortTable(2)">number</th>
+            <th onclick="sortTable(3)">comment</th>
+            <th onclick="sortTable(4)">likes</th>
+            <th onclick="sortTable(5)">author</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for idx, comment in enumerate(comAll['video_comments'], start=1) %}
+        <tr>
+            <td>{{ idx }}</td>
+            <td>{{ comment['comment_text'] }}</td>
+            <td>{{ comment['like_count'] }}</td>
+            <td>{{ comment['author'] }}</td>
+        </tr>
+
+
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+
+</div>
+{% endif %}
+
+{%if processed_data%}
+<div class="analysis_table_c">
+    <table id="analysis_table_i">
+        <thead>
+        <tr>
+            <th onclick="sortTable(2)">number</th>
+            <th onclick="sortTable(2)">Comments</th>
+            <th onclick="sortTable(3)">Categorys</th>
+            <th onclick="sortTable(4)">Scores</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for idx, comment in enumerate(processed_data, start=1) %}
+        <tr>
+            <td>{{ idx }}</td>
+            <td>{{ comment[0] }}</td>
+            <td>{{ comment[1][0]["label"] }}</td>
+            <td>{{ comment[1][0]["score"] }}</td>
+        </tr>
+        {%endfor%}
+        </tbody>
+    </table>
+</div>
+{%endif%}
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
