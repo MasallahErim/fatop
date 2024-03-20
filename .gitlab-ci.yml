@@ -1,0 +1,51 @@
+default:
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+stages:
+  - build-flask
+  - build-nginx
+  - deploy
+variables:
+ # DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: "/certs"
+  CONTAINER_IMAGE_TAG: "1.1"
+  #CONTAINER_IMAGE: registry.gitlab.com/fatop/fatop/webpage:$CONTAINER_IMAGE_TAG
+  CONTAINER_FLASKAPP_IMAGE: registry.gitlab.com/fatop/fatop/flask-app:$CONTAINER_IMAGE_TAG
+  CONTAINER_NGINX_IMAGE: registry.gitlab.com/fatop/fatop/nginx-flask:$CONTAINER_IMAGE_TAG
+
+
+build1:
+  stage: build-flask
+  script:
+    - docker system prune -a
+    - docker build --pull -t $CONTAINER_FLASKAPP_IMAGE ./flaskapp
+    - docker push $CONTAINER_FLASKAPP_IMAGE
+
+build2:
+  stage: build-nginx
+  script:
+    - docker system prune -a
+    - docker build --pull -t $CONTAINER_NGINX_IMAGE ./nginx
+    - docker push $CONTAINER_NGINX_IMAGE
+
+
+
+deploy:
+  stage: deploy
+  script:
+    - docker rm -f $(docker ps -qa)
+    - docker rmi -f $(docker images -qa)
+    - echo "images ve containerler kaldırıdı"
+    - echo "$CONTAINER_FLASKAPP_IMAGE adlı image oluşturuluyor" 
+    - docker run -itd -p 5000:5000 --name flaskapp $CONTAINER_FLASKAPP_IMAGE
+    - echo "$CONTAINER_NGINX_IMAGE adlı image oluşturuluyor" 
+    - docker run -itd -p 8081:8081 --name nginx-flask $CONTAINER_NGINX_IMAGE
+  tags:
+    - masi
+  only:
+    - devmasi
+
